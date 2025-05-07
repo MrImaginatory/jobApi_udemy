@@ -1,0 +1,22 @@
+Controllers:
+    >jobs.controller.js
+        -getAllJob
+        -getJob
+        -createJob
+        -updateJob
+        -deleteJob
+
+    >auth.controller.js
+        -signIn
+        -signUp
+        
+Models:
+    >jobs
+        -company
+        -position
+        -applicationStatus[interview,declined,pending],
+        -createdBy[mongoose.Types.ObjectId]
+    >userModel
+        -Name
+        -Email
+        -Password
