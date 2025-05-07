@@ -2,7 +2,6 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import cors from 'cors';
-import xss from 'xss-clean';
 import rateLimiter from 'express-rate-limit';
 
 // routesImport
@@ -19,7 +18,6 @@ app.use(rateLimiter({
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
-app.use(xss());
 app.use(cookieParser());
 
 // Routes

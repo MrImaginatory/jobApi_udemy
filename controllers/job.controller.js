@@ -32,7 +32,8 @@ const getAllJobs = asyncWrapper(async (req, res) => {
 
     return res.status(200).json({
         message: jobs.length ? `Jobs found of ${req.user.userName}` : "No jobs found",
-        jobs
+        jobs,
+        totalJobs: jobs.length
     });
 });
 
@@ -46,7 +47,7 @@ const getJob = asyncWrapper(async (req, res) => {
         return res.status(404).json({ message: "Job not found" });
     }
 
-    return res.status(200).json({ message: `Job found for ${req.user.userName}`, job });
+    return res.status(200).json({ message: `Job found for ${req.user.userName}`, job ,totalJobs:jobs.length });
 });
 
 const updateJob = asyncWrapper(async (req, res) => {
