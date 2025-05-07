@@ -1,111 +1,103 @@
-import jobSchema from '../models/job.models.js'
-import asyncWrapper from '../utils/asyncWrapper.js'
+import jobSchema from '../models/job.models.js';
+import asyncWrapper from '../utils/asyncWrapper.js';
 
-const createJob = asyncWrapper(async(req,res)=>{
-    const {company,position,status} = req.body;
-    const {_id} = req.user;
+const createJob = asyncWrapper(async (req, res) => {
+    const { company, position, status } = req.body;
+    const { _id } = req.user;
 
-    if (!company||!position||!status) {
-        return res.status(404).json({message:"Please Provide All Details"})
+    if (!company || !position || !status) {
+        return res.status(400).json({ message: "Please provide all details" });
     }
 
     const job = new jobSchema({
-            company:company,
-            position:position,
-            status:status,
-            createdBy:_id
-        })
+        company,
+        position,
+        status,
+        createdBy: _id
+    });
+
     const savedJob = await job.save();
 
-    if(!savedJob||savedJob.length <=0){
-        return res.status(502).json({message:"Error Creating jobs try again later"});
+    if (!savedJob) {
+        return res.status(500).json({ message: "Error creating job, try again later" });
     }
 
-    res.status(200).json({message:"success",jobDetails:savedJob});
-})
+    return res.status(201).json({ message: `Job created successfully by ${req.user.userName}`, jobDetails: savedJob });
+});
 
-const getAllJobs = asyncWrapper(async(req,res)=>{
-    const {_id} = req.user;
-    
-    const jobs = await jobSchema.find({createdBy:_id});
+const getAllJobs = asyncWrapper(async (req, res) => {
+    const { _id } = req.user;
 
-    if(!jobs || jobs.length <= 0){
-        return res.status(404).json({message:"No Jobs Found Please Apply For one"});
-    }
+    const jobs = await jobSchema.find({ createdBy: _id });
 
-    return res.status(200).json({message:"Jobs",jobs})
+    return res.status(200).json({
+        message: jobs.length ? `Jobs found of ${req.user.userName}` : "No jobs found",
+        jobs
+    });
+});
 
-})
-
-const getJob = asyncWrapper(async(req,res)=>{
-    const {_id} = req.user;
+const getJob = asyncWrapper(async (req, res) => {
+    const { _id } = req.user;
     const jobId = req.params.jobId;
-    
-    const jobs = await jobSchema.find({_id:jobId,createdBy:_id});
 
-    if(!jobs || jobs.length <= 0){
-        return res.status(404).json({message:"No Jobs Found Please Apply For one"});
+    const job = await jobSchema.findOne({ _id: jobId, createdBy: _id });
+
+    if (!job) {
+        return res.status(404).json({ message: "Job not found" });
     }
 
-    return res.status(200).json({message:"Jobs",jobs})
-})
+    return res.status(200).json({ message: `Job found for ${req.user.userName}`, job });
+});
 
-const updateJob = asyncWrapper(async(req,res)=>{
+const updateJob = asyncWrapper(async (req, res) => {
     const jobId = req.params.jobId;
     const userId = req.user._id;
-    const {status} = req.body;
+    const { status } = req.body;
 
-    const jobExists = await jobSchema.findById({_id:jobId,createdBy:userId});
-    
-    
-    if(!jobExists){
-        return res.status(404).json({message:"Job not Found!"});
+    const jobExists = await jobSchema.findById(jobId);
+
+    if (!jobExists) {
+        return res.status(404).json({ message: "Job not found" });
     }
 
-    if (jobExists.createdBy.toString() !== userId.toString()){
-        return res.status(404).json({message:"Unauthorized User Cannot update Tasks"});
+    if (jobExists.createdBy.toString() !== userId.toString()) {
+        return res.status(403).json({ message: "Unauthorized user cannot update this job" });
     }
 
-
-    const updateJob = await jobSchema.findOneAndUpdate(
+    const updatedJob = await jobSchema.findOneAndUpdate(
         { _id: jobId, createdBy: userId },
-        { status: status },
+        { status },
         { new: true }
     );
 
-    if(!updateJob || updateJob.length <=0){
-        return res.status(501).json({message:"Error Updating Task Try Again Later"});
+    if (!updatedJob) {
+        return res.status(500).json({ message: "Error updating job, try again later" });
     }
 
-    return res.status(200).json({message:"Job Updated Successfully",updateJob});
+    return res.status(200).json({ message: `Job updated successfully by ${req.user.userName}`, job: updatedJob });
+});
 
-})
-
-const deleteJob = asyncWrapper(async(req,res)=>{
+const deleteJob = asyncWrapper(async (req, res) => {
     const jobId = req.params.jobId;
     const userId = req.user._id;
-    
-    const jobExists = await jobSchema.findById({_id:jobId,createdBy:userId});
 
-    console.log(jobExists);
-    
+    const jobExists = await jobSchema.findById(jobId);
 
     if (!jobExists) {
-        return res.status(404).json({message:"Job does not Exists"});
+        return res.status(404).json({ message: "Job does not exist" });
     }
 
-    if (jobExists.createdBy.toString() !== userId.toString()){
-        return res.status(404).json({message:"Unauthorized User Cannot Delete Tasks"});
+    if (jobExists.createdBy.toString() !== userId.toString()) {
+        return res.status(403).json({ message: "Unauthorized user cannot delete this job" });
     }
 
-    const deleteJob = await jobSchema.findOneAndDelete({_id:jobId,createdBy:userId});
+    const deletedJob = await jobSchema.findOneAndDelete({ _id: jobId, createdBy: userId });
 
-    if(!deleteJob||deleteJob.length<=0 ){
-        return res.status(501).json({message:"Error deleting the job try gain later"});
+    if (!deletedJob) {
+        return res.status(500).json({ message: "Error deleting the job, try again later" });
     }
 
-    return res.status(200).json({message:"Job deleted SuccessFully",deleteJob})
+    return res.status(200).json({ message: `Job deleted successfully by ${req.user.userName}`, job: deletedJob });
+});
 
-})
-
-export {createJob,getJob,getAllJobs,updateJob,deleteJob}
+export { createJob, getJob, getAllJobs, updateJob, deleteJob };

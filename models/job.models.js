@@ -4,20 +4,19 @@ const jobSchema = new mongoose.Schema({
     company:{
         type:String,
         required:[true,'Company Name required'],
-        min:3,
-        max:50,
+        minlength:3,
+        maxlength:50,
     },
     position:{
         type:String,
-        required:[true,'Company Name required'],
-        min:3,
-        max:50,
+        required:[true,'Position required'],
+        minlength:3,
+        maxlength:50,
     },
     status:{
         type:String,
-        required:[true,'Company Name required'],
-        min:3,
-        enum:['pending','interview','declined'],
+        required:[true,'Status required'],
+        enum:['pending','interview','declined','accepted'],
         default:'pending'
     },
     createdBy:{

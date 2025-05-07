@@ -1,18 +1,31 @@
-import dotenv from 'dotenv/config'
-import asyncWrapper from '../utils/asyncWrapper.js';
+import dotenv from 'dotenv/config';
 import jwt from 'jsonwebtoken';
+import asyncWrapper from '../utils/asyncWrapper.js';
 
 const jwtSecret = process.env.JWT_SECRET;
 
 const tokenCheck = asyncWrapper(async (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    const cookie = req.headers.cookie;
+    const authHeader = req.headers.authorization || "";
+    const cookieHeader = req.headers.cookie || "";
 
-    const token = cookie.split('=')[1] || authHeader.split(" ")[1];
-    
-    if(!token || token===undefined || token.length<=0){
-        return res.status(401).json({ message: "Unauthorized User" });
+    let token = null;
+
+    if (authHeader.startsWith("Bearer ")) {
+        token = authHeader.split(" ")[1];
+        
+    } else {
+        const match = cookieHeader.match(/jwtToken=([^;]+)/);
+        if (match) {
+            token = match[1];
+        }
     }
+
+    if (!token) {
+        return res.status(401).json({ message: "Unauthorized: Token missing" });
+    }
+
+    console.log(token);
+    
 
     try {
         const decodedToken = jwt.verify(token, jwtSecret);
