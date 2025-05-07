@@ -20,3 +20,11 @@ Models:
         -Name
         -Email
         -Password
+
+Security Packages:
+    -jsonWebToken
+    -bcryptJs
+    -helmet
+    -cors
+    -xss-clean
+    -express-rate-limit
