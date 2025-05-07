@@ -88,14 +88,20 @@ npm start
 
 ## 🏗️ Tech Stack
 
-- **Node.js** 🌳
-- **Express** ⚡
-- **MongoDB** 🍃
-- **Mongoose** 🔗
-- **JWT** 🔐
-- **Bcryptjs** 🧂
-- **Dotenv** 🌎
-- **Cookie-Parser** 🍪
+Here are some suitable emojis for each of the mentioned technologies:
+
+* **Node.js**: 🟢💻
+* **Express**: 🚄⚡️
+* **MongoDB**: 🟢📊
+* **Mongoose**: 🐍🔗
+* **JWT (JSON Web Token)**: 🔑🌐
+* **Bcryptjs**: 🧮🔒
+* **Dotenv**: 🌱🔧
+* **Cookie-Parser**: 🍪🔍
+* **Helmet**: 🪖🛡️
+* **CORS**: 🌍🔗
+* **XSS-Clean**: 🧹🛡️
+* **Express-rate-Limit**: ⏱️🚦
 
 ## 🤝 Contributing
 
